@@ -1,0 +1,75 @@
+postgres:
+        build: ./IoT_Demo_Datacenter/Postgres
+        hostname: postgres
+        expose:
+                - 5432
+                - 80
+        ports:
+                - "80:80"
+                - "5432:5432"
+
+receiver:
+        build: ./IoT_Demo_Datacenter/receiver
+        hostname: receiver
+        expose:
+                - 8181
+                - 61616
+        ports:
+                - "8181:8181"
+        links:
+                - postgres
+                - activemq
+        environment:
+                - SmartGatewayActiveMQBroker="192.168.42.1:4711"
+
+
+rules:
+        build: ./IoT_Demo_Datacenter/Rules
+        hostname: iotdatacenterrules
+        links:
+               - receiver
+               - bpm
+               - activemq
+        environment:
+               - mqttReceiverURL=activemq
+
+
+bpm:
+        build:  ./IoT_Demo_Datacenter/bpm
+        hostname: bpm
+        expose:
+               - 8080
+        ports:
+               - 8080:8080
+        links:
+               - receiver
+
+activemq:
+        build: ./IoT_Demo_Gateway/ActiveMQ
+        hostname: activemq
+        expose:
+                - 61616
+                - 5672
+                - 61613
+                - 1884
+                - 61614
+                - 8161
+        ports:
+                - "8161:8161"
+                - "1883:1883"
+
+fuseeap:
+        build: ./IoT_Demo_Gateway/FuseEAP
+        hostname: fuse
+        expose:
+                - 8080
+                - 9990
+        ports:
+                - "8090:8080"
+                - "9990:9990"
+        links:
+                - activemq
+                - receiver
+        privileged: true
+        volumes:
+                - ./IoT_Demo_Gateway/Smart_Gateway/target:/home/psteiner/target
