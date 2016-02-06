@@ -57,7 +57,7 @@
          - maven_builds
 
       - name: Build Datacenter BPM module
-        shell: "mvn clean install >> ../../somelog.txt"
+        shell: "mvn clean install >> ../../../../somelog.txt"
         args:
            chdir: ../IoT_Demo_Datacenter/bpm/LightWorkItemHandler
         tags:
@@ -111,7 +111,7 @@
          - docker_images
 
       - name: Building the other  images with docker-compose
-        shell: "docker-compose build >> somelog.txt"
+        shell: "docker-compose build >> ../somelog.txt"
         args:
           chdir: ./
         tags:
