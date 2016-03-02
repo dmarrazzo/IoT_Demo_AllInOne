@@ -3,12 +3,16 @@
   connection: local
   tasks:
       - name: Clone Smart Gateway code from github
-        git: repo=https://github.com/PatrickSteiner/IoT_Demo_Gateway.git dest=./../IoT_Demo_Gateway force=yes
+        git: repo=https://github.com/PatrickSteiner/IoT_Demo_Gateway.git
+             dest=./../IoT_Demo_Gateway force=yes
+             version=Minnowboard
         tags:
          - github
 
       - name: Clone Smart Datacenter code from github
-        git: repo=https://github.com/PatrickSteiner/IoT_Demo_Datacenter.git dest=./../IoT_Demo_Datacenter force=yes
+        git: repo=https://github.com/PatrickSteiner/IoT_Demo_Datacenter.git
+             dest=./../IoT_Demo_Datacenter force=yes
+             version=Minnowboard
         tags:
          - github
 
@@ -22,13 +26,13 @@
         tags:
          - copy_applications
 
-      - name: Copy JBoss EAP for Gateway images if exists
-        copy: src=./../software/jboss-eap-6.4.0.zip dest=../IoT_Demo_Gateway/FuseEAP/Docker_Files/software/
+      - name: Copy JBoss BPM if exists
+        copy: src=./../software/jboss-bpmsuite-6.2.0.GA-deployable-eap6.x.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
         tags:
          - copy_applications
 
-      - name: Copy JBoss BPM if exists
-        copy: src=./../software/jboss-bpmsuite-6.2.0.GA-deployable-eap6.x.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
+      - name: Copy JBoss DataGrid Libraries for EAP if exists
+        copy: src=./../software/jboss-datagrid-6.6.0-eap-modules-library.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
         tags:
          - copy_applications
 
@@ -37,17 +41,10 @@
         tags:
          - copy_applications
 
-      - name: Copy JBoss Fuse for JBoss EAP if exists
-        copy: src=./../software/fuse-eap-installer-6.2.1.redhat-084.jar dest=../IoT_Demo_Gateway/FuseEAP/Docker_Files/software/
+      - name: Copy JBoss DataGrid if exists
+        copy: src=./../software/jboss-datagrid-6.6.0-server.zip dest=../IoT_Demo_Datacenter/DataGrid/Docker_Files/software/
         tags:
          - copy_applications
-
-      - name: Copy JBoss A-MQ if exists
-        copy: src=./../software/jboss-a-mq-6.2.1.redhat-084.zip dest=../IoT_Demo_Gateway/ActiveMQ/Docker_Files/software/
-        tags:
-         - copy_applications
-      - name: Patch Datacenter Receiver for this environment
-        replace: dest=./../IoT_Demo_Datacenter/receiver/src/main/resources/OSGI-INF/blueprint/blueprint.xml regexp='192.168.42.1' replace='activemq' backup=yes
 
       - name: Build Datacenter Receiver module
         shell: "mvn clean install >> ../../somelog.txt"
@@ -70,8 +67,6 @@
         tags:
          - maven_builds
 
-      - name: Patch Smart_Gateway for this environment
-        replace: dest=./../IoT_Demo_Gateway/Smart_Gateway/src/main/webapp/META-INF/jboss-camel-context.xml regexp='192.168.42.17' replace='receiver' backup=yes
 
       - name: Build Smart_Gateway module
         shell: "mvn clean install >> ../../somelog.txt"
@@ -86,15 +81,6 @@
            chdir: ../IoT_Demo_Sensors/producer
         tags:
          - maven_builds
-
-      - name: Patch start scripts for demo producer
-        replace: dest=./../IoT_Demo_Sensors/run.sh regexp='192.168.42.1' replace='localhost' backup=yes
-
-      - name: Patch start scripts for demo producer
-        replace: dest=./../IoT_Demo_Sensors/runLight.sh regexp='192.168.42.1' replace='localhost' backup=yes
-
-      - name: Patch start scripts for demo producer
-        replace: dest=./../IoT_Demo_Sensors/runNormal.sh regexp='192.168.42.1' replace='localhost' backup=yes
 
       - name: Build Docker base image
         shell: "docker build --rm -t psteiner/base . >> ../../somelog.txt"

@@ -18,9 +18,10 @@ receiver:
                 - "8181:8181"
         links:
                 - postgres
-                - activemq
         environment:
-                - SmartGatewayActiveMQBroker="192.168.42.1:4711"
+                - GATEWAY_JMS_BROKER_URL=tcp://smartgateway:61616
+                - BROKER_ADMIN_UID=admin
+                - BROKER_ADMIN_PASSWD=change12_me
 
 
 rules:
@@ -29,10 +30,16 @@ rules:
         links:
                - receiver
                - bpm
-               - activemq
         environment:
-               - mqttReceiverURL=activemq
-
+               - SOURCE_AMQ_BROKER=tcp://receiver:61616
+               - TARGET_MQTT_BROKER=tcp://smartgateway:1883
+               - SOURCE_QUEUE=message.to.rules
+               - TARGET_QUEUE=message.to.datacenter
+               - BROKER_ADMIN_UID=admin
+               - BROKER_ADMIN_PASSWD=change12_me
+        privileged: true
+        volumes:
+                - ./Rules/target:/home/psteiner/target
 
 bpm:
         build:  ./IoT_Demo_Datacenter/bpm
@@ -44,32 +51,52 @@ bpm:
         links:
                - receiver
 
-activemq:
-        build: ./IoT_Demo_Gateway/ActiveMQ
-        hostname: activemq
+jdg:
+        build:  ./IoT_Demo_Datacenter/DataGrid
+        hostname: jdg
         expose:
-                - 61616
-                - 5672
-                - 61613
-                - 1884
-                - 61614
-                - 8161
+               - 8080
+               - 11222
         ports:
-                - "8161:8161"
-                - "1883:1883"
+               - 11222:11222
+        volumes:
+               - ~/.m2/repository:/home/psteiner/.m2/repository
 
-fuseeap:
-        build: ./IoT_Demo_Gateway/FuseEAP
-        hostname: fuse
+smartgateway:
+        build: ./IoT_Demo_Gateway/Smart_Gateway
+        hostname: smartgateway
         expose:
-                - 8080
-                - 9990
+                - 8181
+                - 61616
+                - 1883
         ports:
-                - "8090:8080"
-                - "9990:9990"
-        links:
-                - activemq
-                - receiver
+                - "8282:8181"
+        environment:
+                - INBOUND_JMS_BROKER_URL=tcp://localhost:61616
+                - OUTBOUND_JMS_BROKER_URL=tcp://localhost:61616
+                - BROKER_ADMIN_UID=admin
+                - BROKER_ADMIN_PASSWD=change12_me
+                - JAVA_MIN_MEM=256M
+                - JAVA_MAX_MEM=256M
+                - JAVA_PERM_MEM=128M
+                - JAVA_MAX_PERM_MEM=128M
         privileged: true
         volumes:
-                - ./IoT_Demo_Gateway/Smart_Gateway/target:/home/psteiner/target
+                - ./Smart_Gateway/target:/home/psteiner/target
+                - ~/.m2/repository:/home/psteiner/.m2/repository
+
+rulescep:
+      build: ./IoT_Demo_Gateway/Rules_CEP
+      hostname: rulescep
+      links:
+               - smartgateway
+      environment:
+               - SOURCE_AMQ_BROKER=tcp://smartgateway:61616
+               - TARGET_AMQ_BROKER=tcp://receiver:61616
+               - SOURCE_QUEUE=message.to.rules_cep
+               - TARGET_QUEUE=message.to.datacenter
+               - BROKER_ADMIN_UID=admin
+               - BROKER_ADMIN_PASSWD=change12_me
+      privileged: true
+      volumes:
+               - ./Rules_CEP/target:/home/psteiner/target

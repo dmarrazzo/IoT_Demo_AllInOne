@@ -1,0 +1,113 @@
+= IoT Demo - Gateway
+
+:Author:    Patrick Steiner
+:Email:     psteiner@redhat.com
+:Date:      23.01.2016
+
+:toc: macro
+
+toc::[]
+
+== Purpose
+This repository is a combined version of the following three IoT Demo repositories:
+
+
+* https://github.com/PatrickSteiner/IoT_Demo_Sensors[Edge / Sensors]: creation of data
+* https://github.com/PatrickSteiner/IoT_Demo_Gateway[Smart Gateway / Controller]: first level of data processing
+* https://github.com/PatrickSteiner/IoT_Demo_Datacenter[Datacenter]: well, the datacenter ...
+
+these three are designed to run in three different places to represent a proper 3-Tier IoT Scenario.
+
+For simpler demonstration and evaluation, this repo is build to run all on one system with all elements separeted
+in their own Docker-based container.
+
+These capabilities needed implemented  out of a set of
+Red Hat JBoss products, each taking over an important part in the IoT landscape
+
+image::pictures/Overview.png[]
+
+=== Hardware requirements
+As this setup consists of 7 running containers, each hosting a full-blown version
+of a Red Hat JBoss product, you will want to run it on at least
+
+ * 2 CPU ( physical or virtual )
+ * 12 GB RAM
+
+I personally am running it with amazing response times in a VM ( 2 vCPU, 12GM ) on a Macbook Pro
+
+=== Software requirements
+Your host server for this demo will need to have
+
+ * git
+ * Maven ( I'm on V 3.3.9 )
+ * Ansible ( I'm on V 2.0.0.2 )
+ * Docker ( I'm running docker-machine V1.9.1 )
+ * docker-compose ( I'm running V1.5.2 )
+
+=== Build procedure
+
+==== Clone Master Repo
+To start with this All-In-One IoT Demo, you will have to clone this repo
+
+```
+Patricks-MacBook-Pro:Demos psteiner$ git clone https://github.com/PatrickSteiner/IoT_Demo_AllInOne.git
+Cloning into 'IoT_Demo_AllInOne'...
+remote: Counting objects: 27, done.
+remote: Compressing objects: 100% (21/21), done.
+remote: Total 27 (delta 6), reused 21 (delta 3), pack-reused 0
+Unpacking objects: 100% (27/27), done.
+Checking connectivity... done.
+```
+
+==== Provide Red Hat JBoss Products
+You will have to copy the following products into their needed location
+
+ * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=37393[JBoss EAP] into directory `./software/`
+ * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=41161[JBoss BPM Suite] into directory `./software/`
+ * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=41311[JBoss Fuse on Karaf] into directory `./software/`
+ * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=42191[JBoss DataGrid] into directory `./software/`
+ * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=42331[JBoss Data Grid 6.6.0 Library Module for JBoss EAP 6] into directory `./software/`
+
+
+=== Building the All-In-One Demo
+I have provided an Ansible playbook for your convenience, so all you need to run is
+
+```
+Patricks-MacBook-Pro:IoT_Demo_AllInOne psteiner$ cd Ansible/
+Patricks-MacBook-Pro:Ansible psteiner$ ansible-playbook demo.yml
+
+...
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=17   changed=9    unreachable=0    failed=0
+```
+
+== Start Environment
+Starting the Smart Gateway is, at the current time, a manual step. I will extend
+the demo to start the Smart Gateway container automatically at boot-time of the Raspberry.
+
+Until then, please start the Smart Gateway with
+
+```
+pi@gateway:~ $ cd IoT_Demo_Gateway/
+pi@gateway:~/IoT_Demo_Gateway $ docker-compose up -d
+```
+
+To "monitor" the startup or runtime of the Smart Gateway you can use the command
+
+```
+pi@gateway:~/IoT_Demo_Gateway $ docker-compose logs
+Attaching to iotdemogateway_smartgateway_1
+smartgateway_1 | Please wait while JBoss Fuse is loading...
+100% [========================================================================]
+```
+
+Once you see the `100%` you are good to go!
+
+To access the various Web-UIs you can use the following links
+
+[width="80%",frame="topbot",options="header,footer"]
+==================================
+| Role | URL | uid / password
+|  Fuse in Datacenter | http://localhost:8181/hawtio/login | admin / change12_me
+==================================
