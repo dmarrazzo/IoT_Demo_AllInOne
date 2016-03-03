@@ -117,12 +117,12 @@ within JBoss BPM Suite. So to do that, you will have to
  1. Upload `IoT_Demo_Datacenter/bpm/LightWorkItemHandler/target/lightWorkItemHandler-1.0.0-SNAPSHOT.jar` to the repository of JBoss BPM Suite
  2. Build & Deploy the process from the Project Explorer of JBoss BPM Suite.
 
- === Generate Testdata
- If you should not have a physical sensor who reports data out IoT Demo, then you
- can use the provided Software-Sensor, which is just a simple Java programm
- which produces testdata and sends it to the MQTT Broker of the Gateway.
+=== Generate Testdata
+If you should not have a physical sensor who reports data out IoT Demo, then you
+can use the provided Software-Sensor, which is just a simple Java programm
+which produces testdata and sends it to the MQTT Broker of the Gateway.
 
- Please take a look at the file `./run.sh` which should be self-explanatory.
- As the rule to create an alert and with the alert a JBoss BPM process is expecting
- a temperature reading of >= 27, there is also a script `./runHigh.sh` which
- will do just that.
+Please take a look at the file `./run.sh` which should be self-explanatory.
+As the rule to create an alert and with the alert a JBoss BPM process is expecting
+a temperature reading of >= 27, there is also a script `./runHigh.sh` which
+will do just that.
