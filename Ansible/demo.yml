@@ -46,6 +46,13 @@
         tags:
          - copy_applications
 
+      - name: Build Software Sensor
+        shell: "mvn clean install >> ../../somelog.txt"
+        args:
+         chdir: ../Software_Sensor
+        tags:
+         - maven_builds
+
       - name: Build Datacenter Receiver module
         shell: "mvn clean install >> ../../somelog.txt"
         args:
