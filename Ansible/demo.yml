@@ -75,6 +75,13 @@
         tags:
          - maven_builds
 
+      - name: Build CEP module
+        shell: "mvn clean install >> ../../somelog.txt"
+        args:
+           chdir: ../IoT_Demo_Gateway/Rules_CEP
+        tags:
+         - maven_builds
+
       - name: Build demo producer
         shell: "mvn clean install >> ../../somelog.txt"
         args:

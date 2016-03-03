@@ -83,23 +83,19 @@ localhost                  : ok=17   changed=9    unreachable=0    failed=0
 ```
 
 == Start Environment
-Starting the Smart Gateway is, at the current time, a manual step. I will extend
-the demo to start the Smart Gateway container automatically at boot-time of the Raspberry.
-
-Until then, please start the Smart Gateway with
+Starting the IoT All-In-One demo is  a manual step.
 
 ```
-pi@gateway:~ $ cd IoT_Demo_Gateway/
+pi@gateway:~ $ cd IoT_Demo_AllInOne
 pi@gateway:~/IoT_Demo_Gateway $ docker-compose up -d
 ```
 
 To "monitor" the startup or runtime of the Smart Gateway you can use the command
 
 ```
-pi@gateway:~/IoT_Demo_Gateway $ docker-compose logs
-Attaching to iotdemogateway_smartgateway_1
-smartgateway_1 | Please wait while JBoss Fuse is loading...
-100% [========================================================================]
+pi@gateway:~/IoT_Demo_AllInOne $ docker-compose logs
+bpm_1          | 12:28:55,900 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015951: Admin console listening on http://0.0.0.0:9990
+bpm_1          | 12:28:55,901 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015874: JBoss EAP 6.4.0.GA (AS 7.5.0.Final-redhat-21) started in 98012ms - Started 1106 of 1143 services (82 services are lazy, passive or on-demand)
 ```
 
 Once you see the `100%` you are good to go!
@@ -107,7 +103,26 @@ Once you see the `100%` you are good to go!
 To access the various Web-UIs you can use the following links
 
 [width="80%",frame="topbot",options="header,footer"]
-==================================
+|==================================
 | Role | URL | uid / password
-|  Fuse in Datacenter | http://localhost:8181/hawtio/login | admin / change12_me
-==================================
+| Fuse in Datacenter | http://localhost:8181/hawtio/login | admin / change12_me
+| Fuse on Gateway | http://localhost:8282/hawtio/login | admin / change12_me
+| BPM Suite | http://localhost:8080/business-central/kie-wb.html | psteiner / change12_me
+|==================================
+
+=== Deploy BPM Process
+Until now, I have not found an automated way to build and deploy the business process
+within JBoss BPM Suite. So to do that, you will have to
+
+ 1. Upload `IoT_Demo_Datacenter/bpm/LightWorkItemHandler/target/lightWorkItemHandler-1.0.0-SNAPSHOT.jar` to the repository of JBoss BPM Suite
+ 2. Build & Deploy the process from the Project Explorer of JBoss BPM Suite.
+
+ === Generate Testdata
+ If you should not have a physical sensor who reports data out IoT Demo, then you
+ can use the provided Software-Sensor, which is just a simple Java programm
+ which produces testdata and sends it to the MQTT Broker of the Gateway.
+
+ Please take a look at the file `./run.sh` which should be self-explanatory.
+ As the rule to create an alert and with the alert a JBoss BPM process is expecting
+ a temperature reading of >= 27, there is also a script `./runHigh.sh` which
+ will do just that.

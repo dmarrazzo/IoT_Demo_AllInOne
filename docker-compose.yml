@@ -14,6 +14,7 @@ receiver:
         expose:
                 - 8181
                 - 61616
+                - 4711
         ports:
                 - "8181:8181"
         links:
@@ -30,6 +31,8 @@ rules:
         links:
                - receiver
                - bpm
+               - smartgateway
+               - jdg
         environment:
                - SOURCE_AMQ_BROKER=tcp://receiver:61616
                - TARGET_MQTT_BROKER=tcp://smartgateway:1883
@@ -39,7 +42,8 @@ rules:
                - BROKER_ADMIN_PASSWD=change12_me
         privileged: true
         volumes:
-                - ./Rules/target:/home/psteiner/target
+                - ./IoT_Demo_Datacenter/Rules/target:/home/psteiner/target
+                - ~/.m2/repository:/home/psteiner/.m2/repository
 
 bpm:
         build:  ./IoT_Demo_Datacenter/bpm
@@ -50,6 +54,9 @@ bpm:
                - 8080:8080
         links:
                - receiver
+               - jdg
+        volumes:
+               - ~/.m2/repository:/home/psteiner/.m2/repository
 
 jdg:
         build:  ./IoT_Demo_Datacenter/DataGrid
@@ -71,6 +78,7 @@ smartgateway:
                 - 1883
         ports:
                 - "8282:8181"
+                - "1883:1883"
         environment:
                 - INBOUND_JMS_BROKER_URL=tcp://localhost:61616
                 - OUTBOUND_JMS_BROKER_URL=tcp://localhost:61616
@@ -82,7 +90,7 @@ smartgateway:
                 - JAVA_MAX_PERM_MEM=128M
         privileged: true
         volumes:
-                - ./Smart_Gateway/target:/home/psteiner/target
+                - ./IoT_Demo_Gateway/Smart_Gateway/target:/home/psteiner/target
                 - ~/.m2/repository:/home/psteiner/.m2/repository
 
 rulescep:
@@ -90,6 +98,7 @@ rulescep:
       hostname: rulescep
       links:
                - smartgateway
+               - receiver
       environment:
                - SOURCE_AMQ_BROKER=tcp://smartgateway:61616
                - TARGET_AMQ_BROKER=tcp://receiver:61616
@@ -99,4 +108,4 @@ rulescep:
                - BROKER_ADMIN_PASSWD=change12_me
       privileged: true
       volumes:
-               - ./Rules_CEP/target:/home/psteiner/target
+               - ./IoT_Demo_Gateway/Rules_CEP/target:/home/psteiner/target
