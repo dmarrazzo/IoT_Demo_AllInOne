@@ -46,6 +46,10 @@ Your host server for this demo will need to have
 
 WARNING: If you run the Ansible script with something else then `root` ( which you can), please make sure, that your user is capable of running the `docker` commands.
 
+WARNING: In demo setups and to reduce complexity, you might want to consider to
+deactivate firewall on your system.
+If you don't please to open up the following port: 1883 ( my default port for MQTT )
+
 === Build procedure
 
 ==== Clone Master Repo
