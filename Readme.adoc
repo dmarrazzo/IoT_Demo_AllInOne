@@ -44,6 +44,8 @@ Your host server for this demo will need to have
  * Docker ( I'm running docker-machine V1.9.1 )
  * docker-compose ( I'm running V1.5.2 )
 
+WARNING: If you run the Ansible script with something else then `root` ( which you can), please make sure, that your user is capable of running the `docker` commands.
+
 === Build procedure
 
 ==== Clone Master Repo
