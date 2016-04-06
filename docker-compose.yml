@@ -17,8 +17,11 @@ receiver:
                 - 4711
         ports:
                 - "8181:8181"
+                - "4711:4711"
+                - "61616:61616"
         links:
                 - postgres
+                - smartgateway
         environment:
                 - GATEWAY_JMS_BROKER_URL=tcp://smartgateway:61616
                 - BROKER_ADMIN_UID=admin
@@ -40,10 +43,13 @@ rules:
                - TARGET_QUEUE=message.to.datacenter
                - BROKER_ADMIN_UID=admin
                - BROKER_ADMIN_PASSWD=change12_me
+               - RULES_FILE=/home/psteiner/Rules/DecisionTable.xls
         privileged: true
         volumes:
                 - ./IoT_Demo_Datacenter/Rules/target:/home/psteiner/target
+                - ./IoT_Demo_Datacenter/Rules/Docker_Files/Rules:/home/psteiner/Rules
                 - ~/.m2/repository:/home/psteiner/.m2/repository
+
 
 bpm:
         build:  ./IoT_Demo_Datacenter/bpm
