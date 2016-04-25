@@ -26,6 +26,10 @@ receiver:
                 - GATEWAY_JMS_BROKER_URL=tcp://smartgateway:61616
                 - BROKER_ADMIN_UID=admin
                 - BROKER_ADMIN_PASSWD=change12_me
+        privileged: true
+        volumes:
+                - ./IoT_Demo_Datacenter/receiver/target:/home/psteiner/fuse/deploy
+                - ~/.m2/repository:/home/psteiner/.m2/repository
 
 
 rules:
@@ -96,7 +100,7 @@ smartgateway:
                 - JAVA_MAX_PERM_MEM=128M
         privileged: true
         volumes:
-                - ./IoT_Demo_Gateway/Smart_Gateway/target:/home/psteiner/target
+                - ./IoT_Demo_Gateway/Smart_Gateway/target:/home/psteiner/fuse/deploy
                 - ~/.m2/repository:/home/psteiner/.m2/repository
 
 rulescep:
