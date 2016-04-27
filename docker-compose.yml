@@ -47,7 +47,7 @@ rules:
                - TARGET_QUEUE=message.to.datacenter
                - BROKER_ADMIN_UID=admin
                - BROKER_ADMIN_PASSWD=change12_me
-               - RULES_FILE=/home/psteiner/Rules/DecisionTable.xls
+               - RULES_FILE=file:///home/psteiner/Rules/DecisionTable.xls
         privileged: true
         volumes:
                 - ./IoT_Demo_Datacenter/Rules/target:/home/psteiner/target
@@ -65,6 +65,7 @@ bpm:
         links:
                - receiver
                - jdg
+        privileged: true
         volumes:
                - ~/.m2/repository:/home/psteiner/.m2/repository
 
