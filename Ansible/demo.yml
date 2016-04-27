@@ -27,7 +27,7 @@
          - copy_applications
 
       - name: Copy JBoss EAP V6.4.6 patch for Datacenter images if exists
-        copy: src=./../software/jboss-eap-6.4.4-patch.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
+        copy: src=./../software/jboss-eap-6.4.6-patch.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
         tags:
          - copy_applications
 
