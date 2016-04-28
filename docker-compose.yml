@@ -21,11 +21,6 @@ receiver:
                 - "61616:61616"
         links:
                 - postgres
-                - smartgateway
-        environment:
-                - GATEWAY_JMS_BROKER_URL=tcp://smartgateway:61616
-                - BROKER_ADMIN_UID=admin
-                - BROKER_ADMIN_PASSWD=change12_me
         privileged: true
         volumes:
                 - ./IoT_Demo_Datacenter/receiver/target:/home/psteiner/fuse/deploy
@@ -87,12 +82,14 @@ smartgateway:
                 - 8181
                 - 61616
                 - 1883
+        links:
+                - receiver
         ports:
                 - "8282:8181"
                 - "1883:1883"
         environment:
-                - INBOUND_JMS_BROKER_URL=tcp://localhost:61616
-                - OUTBOUND_JMS_BROKER_URL=tcp://localhost:61616
+                - GATEWAY_JMS_BROKER_URL=tcp://localhost:61616
+                - DATACENTER_JMS_BROKER_URL=tcp://receiver:61616
                 - BROKER_ADMIN_UID=admin
                 - BROKER_ADMIN_PASSWD=change12_me
                 - JAVA_MIN_MEM=256M
