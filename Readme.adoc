@@ -68,7 +68,8 @@ Checking connectivity... done.
 ==== Provide Red Hat JBoss Products
 You will have to copy the following products into their needed location
 
- * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=37393[JBoss EAP] into directory `./software/`
+ * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=37393[JBoss EAP 6.4.0] into directory `./software/`
+ * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=42471[JBoss EAP Patch 6.4.6] into directory `./software/`
  * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=41161[JBoss BPM Suite] into directory `./software/`
  * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=41311[JBoss Fuse on Karaf] into directory `./software/`
  * https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=42191[JBoss DataGrid] into directory `./software/`
