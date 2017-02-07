@@ -1,3 +1,4 @@
+# Containers running in the Datacenter
 postgres:
         build: ./IoT_Demo_Datacenter/Postgres
         hostname: postgres
@@ -75,6 +76,9 @@ jdg:
         volumes:
                - ~/.m2/repository:/home/psteiner/.m2/repository
 
+# Containers running in the Smart Gateway
+# if you want to run the Smart Gateway on the device, drop the following sections (smartgateway, rulescep)
+# Above change the smartgateway address according your network configuration
 smartgateway:
         build: ./IoT_Demo_Gateway/Smart_Gateway
         hostname: smartgateway
@@ -85,10 +89,11 @@ smartgateway:
         links:
                 - receiver
         ports:
-                - "8282:8181"
+                - "8182:8181"
+                - "61617:61616"
                 - "1883:1883"
         environment:
-                - GATEWAY_JMS_BROKER_URL=tcp://localhost:61616
+                - GATEWAY_JMS_BROKER_URL=tcp://smartgateway:61616
                 - DATACENTER_JMS_BROKER_URL=tcp://receiver:61616
                 - BROKER_ADMIN_UID=admin
                 - BROKER_ADMIN_PASSWD=change12_me
