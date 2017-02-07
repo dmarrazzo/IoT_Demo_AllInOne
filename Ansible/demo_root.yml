@@ -1,0 +1,126 @@
+- name: Configure this system to run IoT Demo
+  hosts: demos
+  connection: local
+  tasks:
+      - name: Clone Smart Gateway code from github
+        git: repo=https://github.com/PatrickSteiner/IoT_Demo_Gateway.git
+             dest=./../IoT_Demo_Gateway force=yes
+             version=Minnowboard
+        tags:
+         - github
+
+      - name: Clone Smart Datacenter code from github
+        git: repo=https://github.com/PatrickSteiner/IoT_Demo_Datacenter.git
+             dest=./../IoT_Demo_Datacenter force=yes
+             version=Minnowboard
+        tags:
+         - github
+
+      - name: Clone Sensor code from github
+        git: repo=https://github.com/PatrickSteiner/IoT_Demo_Sensors.git dest=./../IoT_Demo_Sensors force=yes
+        tags:
+         - github
+
+      - name: Copy JBoss EAP for Datacenter images if exists
+        copy: src=./../software/jboss-eap-6.4.0.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
+        tags:
+         - copy_applications
+
+      - name: Copy JBoss EAP V6.4.6 patch for Datacenter images if exists
+        copy: src=./../software/jboss-eap-6.4.6-patch.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
+        tags:
+         - copy_applications
+
+      - name: Copy JBoss BPM if exists
+        copy: src=./../software/jboss-bpmsuite-6.2.0.GA-deployable-eap6.x.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
+        tags:
+         - copy_applications
+
+      - name: Copy JBoss DataGrid Libraries for EAP if exists
+        copy: src=./../software/jboss-datagrid-6.6.0-eap-modules-library.zip dest=../IoT_Demo_Datacenter/bpm/Docker_Files/software/
+        tags:
+         - copy_applications
+
+      - name: Copy JBoss Fuse if exists
+        copy: src=./../software/jboss-fuse-full-6.2.1.redhat-084.zip dest=../IoT_Demo_Datacenter/Fuse/Docker_Files/software/
+        tags:
+         - copy_applications
+
+      - name: Copy JBoss DataGrid if exists
+        copy: src=./../software/jboss-datagrid-6.6.0-server.zip dest=../IoT_Demo_Datacenter/DataGrid/Docker_Files/software/
+        tags:
+         - copy_applications
+
+      - name: Build Software Sensor
+        shell: "mvn clean install >> ../../somelog.txt"
+        args:
+         chdir: ../Software_Sensor
+        tags:
+         - maven_builds
+
+      - name: Build Datacenter Receiver module
+        shell: "mvn clean install >> ../../somelog.txt"
+        args:
+           chdir: ../IoT_Demo_Datacenter/receiver
+        tags:
+         - maven_builds
+
+      - name: Build Datacenter BPM module
+        shell: "mvn clean install >> ../../../../somelog.txt"
+        args:
+           chdir: ../IoT_Demo_Datacenter/bpm/LightWorkItemHandler
+        tags:
+         - maven_builds
+
+      - name: Build Datacenter Rules module
+        shell: "mvn clean install >> ../../somelog.txt"
+        args:
+           chdir: ../IoT_Demo_Datacenter/Rules
+        tags:
+         - maven_builds
+
+
+      - name: Build Smart_Gateway module
+        shell: "mvn clean install >> ../../somelog.txt"
+        args:
+           chdir: ../IoT_Demo_Gateway/Smart_Gateway
+        tags:
+         - maven_builds
+
+      - name: Build CEP module
+        shell: "mvn clean install >> ../../somelog.txt"
+        args:
+           chdir: ../IoT_Demo_Gateway/Rules_CEP
+        tags:
+         - maven_builds
+
+      - name: Build demo producer
+        shell: "mvn clean install >> ../../somelog.txt"
+        args:
+           chdir: ../IoT_Demo_Sensors/producer
+        tags:
+         - maven_builds
+
+      - name: Build Docker base image
+        command: docker build --rm -t psteiner/base .
+        args:
+          chdir: ../IoT_Demo_Datacenter/Base
+        become: true
+        tags:
+         - docker_images
+
+      - name: Build Docker Fuse
+        command: docker build --rm -t psteiner/fuse .
+        args:
+          chdir: ../IoT_Demo_Datacenter/Fuse
+        become: true
+        tags:
+         - docker_images
+
+      - name: Building the other  images with docker-compose
+        command: docker-compose build
+        args:
+          chdir: ./
+        become: true
+        tags:
+         - docker_images

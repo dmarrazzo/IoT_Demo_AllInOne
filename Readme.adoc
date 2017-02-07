@@ -89,6 +89,17 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=17   changed=9    unreachable=0    failed=0
 ```
 
+
+CAUTION: *Fedora / RHEL Users*
+
+Fedora and RHEL for security reasons requires root privileges to run docker (your user must be a sudoer).
+So in those envs, you have to issue the following command and type in your credentials:
+
+```
+$ ansible-playbook demo_root.yml --ask-become-pass
+```
+
+
 == Start Environment
 Starting the IoT All-In-One demo is  a manual step.
 
